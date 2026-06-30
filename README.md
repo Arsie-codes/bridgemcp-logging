@@ -178,3 +178,24 @@ app.register_plugin(RateLimitPlugin())
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+# Official BridgeMCP Ecosystem
+
+## Framework
+
+- **BridgeMCP**
+  https://github.com/Arsie-codes/bridgemcp
+
+## Official Plugins
+
+- **bridgemcp-logging**
+  https://github.com/Arsie-codes/bridgemcp-logging
+
+## Official Servers
+
+- **bridgemcp-server-weather**
+  https://github.com/Arsie-codes/bridgemcp-server-weather
+
+More official plugins and servers are currently under development.
