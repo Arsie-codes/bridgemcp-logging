@@ -46,7 +46,9 @@ def test_record_fields_accessible() -> None:
 
 def test_record_is_frozen() -> None:
     record = _make_record()
-    with pytest.raises(AttributeError):  # dataclasses.FrozenInstanceError(AttributeError)
+    with pytest.raises(
+        AttributeError
+    ):  # dataclasses.FrozenInstanceError(AttributeError)
         record.name = "other"  # type: ignore[misc]
 
 
