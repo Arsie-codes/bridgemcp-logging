@@ -146,6 +146,25 @@ async def test_emit_error_is_suppressed(capsys: Any) -> None:
     assert "bridgemcp-logging" in captured_err
 
 
+async def test_broken_exception_str_does_not_mask_original(capsys: Any) -> None:
+    """A broken __str__ on the exception must not replace the original exception."""
+
+    class _BrokenStrError(Exception):
+        def __str__(self) -> str:
+            raise RuntimeError("__str__ is broken")
+
+    async def _broken_str_next(ctx: InvocationContext) -> str:
+        raise _BrokenStrError()
+
+    mw, _ = _mw_with_capture()
+    with pytest.raises(_BrokenStrError):
+        await mw(_ctx(), _broken_str_next)
+
+    # Record construction failed, so a suppression notice must appear on stderr
+    captured_err = capsys.readouterr().err
+    assert "bridgemcp-logging" in captured_err
+
+
 async def test_writes_to_stream_on_success() -> None:
     stream = io.StringIO()
     mw = LoggingMiddleware(

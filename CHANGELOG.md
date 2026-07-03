@@ -9,6 +9,20 @@ This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-07-03
+
+### Fixed
+
+- Added `py.typed` marker (PEP 561) so downstream type checkers recognise the package as fully typed.
+  The `Typing :: Typed` classifier was already present in 0.1.0 but the marker was missing from the wheel.
+- `ConsoleHandler` now resolves `sys.stderr` at construction time rather than at import time,
+  preventing stale-stream writes when `sys.stderr` is reassigned after import (e.g. by pytest capture
+  or daemonisation wrappers).
+- Record construction in `LoggingMiddleware` is now inside the same suppression guard as `emit()`.
+  Previously, an exception whose `__str__` raised during `extract_chain()` would propagate from
+  the `finally` block and replace the original tool exception. The logging plugin now guarantees
+  it cannot mask or replace any exception from the handler under any circumstances.
+
 ## [0.1.0] — 2026-06-30
 
 ### Added

@@ -18,17 +18,19 @@ class ConsoleHandler:
     lost if the process exits unexpectedly.
 
     Args:
-        stream: Any writable text stream. Defaults to ``sys.stderr``.
+        stream: Any writable text stream. Resolved to ``sys.stderr`` at
+            construction time when not provided, so reassignments to
+            ``sys.stderr`` after construction are not reflected.
         formatter: Formatter used to convert records to strings.
             Defaults to :class:`~bridgemcp_logging.TextFormatter`.
     """
 
     def __init__(
         self,
-        stream: TextIO = sys.stderr,
+        stream: TextIO | None = None,
         formatter: TextFormatter | None = None,
     ) -> None:
-        self._stream = stream
+        self._stream: TextIO = stream if stream is not None else sys.stderr
         self._formatter = formatter if formatter is not None else TextFormatter()
 
     def emit(self, record: InvocationRecord) -> None:

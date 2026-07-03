@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 from datetime import UTC, datetime
+from typing import Any
 from unittest.mock import MagicMock
 
 from bridgemcp_logging import ConsoleHandler, TextFormatter
@@ -79,6 +80,26 @@ def test_default_formatter_produces_text_output() -> None:
     # TextFormatter produces a bracketed timestamp line
     assert "[" in stream.getvalue()
     assert "tool:ping" in stream.getvalue()
+
+
+def test_stderr_resolved_at_construction_not_import(capsys: Any) -> None:
+    """ConsoleHandler() with no stream argument writes to sys.stderr at
+    construction time, not at import time. Reassigning sys.stderr before
+    constructing the handler must be reflected."""
+    import sys
+
+    original = sys.stderr
+    substitute = io.StringIO()
+    try:
+        sys.stderr = substitute  # type: ignore[assignment]
+        h = ConsoleHandler()  # should capture the substituted stderr
+        h.emit(_make_record())
+    finally:
+        sys.stderr = original
+
+    assert "tool:ping" in substitute.getvalue()
+    # Nothing written to the capsys-captured real stderr
+    assert "tool:ping" not in capsys.readouterr().err
 
 
 def test_multiple_emits_produce_multiple_lines() -> None:

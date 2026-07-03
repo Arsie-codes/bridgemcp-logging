@@ -31,9 +31,9 @@ class LoggingMiddleware:
     is emitted. ``asyncio.CancelledError`` and ``KeyboardInterrupt`` are
     not captured because they are not :exc:`Exception` subclasses.
 
-    If :meth:`~bridgemcp_logging.ConsoleHandler.emit` itself raises, the
-    error is written to ``sys.stderr`` and suppressed — a logging failure
-    must never crash the server.
+    If record construction or :meth:`~bridgemcp_logging.ConsoleHandler.emit`
+    raises, the error is written to ``sys.stderr`` and suppressed — a logging
+    failure must never crash the server or mask the original exception.
     """
 
     def __init__(
@@ -64,34 +64,35 @@ class LoggingMiddleware:
             finished_at = datetime.now(UTC)
             duration_ms = (t1 - t0) * 1000.0
 
-            record = InvocationRecord(
-                invocation_id=str(uuid.uuid4()),
-                app_name=self._app_name,
-                framework_version=self._framework_version,
-                plugin_version=_plugin_version,
-                primitive=ctx.primitive,
-                name=ctx.name,
-                kwargs=dict(ctx.kwargs) if self._config.log_kwargs else None,
-                result=result if (self._config.log_result and exc is None) else None,
-                exception=exc,
-                exception_type=type(exc).__name__ if exc is not None else None,
-                exception_chain=extract_chain(exc) if exc is not None else [],
-                succeeded=exc is None,
-                duration_ms=duration_ms,
-                started_at=started_at,
-                finished_at=finished_at,
-                level=(
-                    self._config.error_level
-                    if exc is not None
-                    else self._config.success_level
-                ),
-            )
-
             try:
+                record = InvocationRecord(
+                    invocation_id=str(uuid.uuid4()),
+                    app_name=self._app_name,
+                    framework_version=self._framework_version,
+                    plugin_version=_plugin_version,
+                    primitive=ctx.primitive,
+                    name=ctx.name,
+                    kwargs=dict(ctx.kwargs) if self._config.log_kwargs else None,
+                    result=(
+                        result if (self._config.log_result and exc is None) else None
+                    ),
+                    exception=exc,
+                    exception_type=type(exc).__name__ if exc is not None else None,
+                    exception_chain=extract_chain(exc) if exc is not None else [],
+                    succeeded=exc is None,
+                    duration_ms=duration_ms,
+                    started_at=started_at,
+                    finished_at=finished_at,
+                    level=(
+                        self._config.error_level
+                        if exc is not None
+                        else self._config.success_level
+                    ),
+                )
                 self._handler.emit(record)
             except Exception:
                 print(
-                    "bridgemcp-logging: emit() raised an exception and was suppressed",
+                    "bridgemcp-logging: record construction or emit() raised an exception and was suppressed",
                     file=sys.stderr,
                 )
 
