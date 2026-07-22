@@ -8,7 +8,13 @@ from typing import Any
 
 
 def extract_chain(exc: Exception) -> list[str]:
-    """Walk __cause__ / __context__ and collect string representations."""
+    """Walk __cause__ / __context__ and collect string representations.
+
+    Internal support function for :class:`~bridgemcp_logging.LoggingMiddleware`.
+    Not part of the public API — it is not exported from ``bridgemcp_logging``
+    and may change without a deprecation cycle. Consume the result via
+    :attr:`InvocationRecord.exception_chain` instead.
+    """
     chain: list[str] = []
     seen: set[int] = set()
     current: BaseException | None = exc

@@ -43,6 +43,8 @@ Console output for each call:
 ## Configuration
 
 ```python
+import sys
+
 from bridgemcp_logging import LoggingPlugin, LoggingConfig, ConsoleHandler
 
 plugin = LoggingPlugin(
@@ -73,8 +75,8 @@ class LoggingPlugin(Plugin):
 
     def __init__(
         self,
-        config: LoggingConfig = LoggingConfig(),
-        handler: ConsoleHandler = ConsoleHandler(),
+        config: LoggingConfig | None = None,   # defaults to LoggingConfig()
+        handler: ConsoleHandler | None = None, # defaults to ConsoleHandler()
     ) -> None: ...
 
     def setup(self, app: BridgeMCP) -> None: ...
@@ -135,8 +137,8 @@ Produces one-line human-readable output:
 class ConsoleHandler:
     def __init__(
         self,
-        stream: TextIO = sys.stderr,
-        formatter: TextFormatter = TextFormatter(),
+        stream: TextIO | None = None,          # defaults to sys.stderr at construction time
+        formatter: TextFormatter | None = None, # defaults to TextFormatter()
     ) -> None: ...
 
     def emit(self, record: InvocationRecord) -> None: ...
