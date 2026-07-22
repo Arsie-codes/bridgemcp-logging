@@ -9,6 +9,15 @@ This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.2] — 2026-07-03
+
+### Fixed
+
+- The version fallback used when the package is not installed (running directly
+  from a source tree) changed from `"__dev__"` to `"0.0.0"`, making it PEP 440
+  parseable by version-aware tooling. Installed users are unaffected — the
+  fallback only applies when package metadata is unavailable.
+
 ## [0.1.1] — 2026-07-03
 
 ### Fixed
